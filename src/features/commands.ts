@@ -643,7 +643,7 @@ const createCommandsMessage = () => {
 
 const commands: ChannelHandlers = {
   handleMessage: ({ msg }) => {
-    if (!msg.guild && msg.channel.type !== "dm") {
+    if (!msg.guild && msg.channel.type !== "DM") {
       return;
     }
 
@@ -655,7 +655,23 @@ const commands: ChannelHandlers = {
       if (keyword) {
         if (cooldown.hasCooldown(msg.author.id, `commands.${keyword}`)) return;
         cooldown.addCooldown(msg.author.id, `commands.${keyword}`);
-        command.handleMessage(msg);
+
+        if (
+          msg.channel.type === "GUILD_TEXT" &&
+          msg.channel.name === "random"
+        ) {
+          msg.channel.send({
+            embed: {
+              title: "Available commands",
+              type: "rich",
+              description:
+                "You can directly message me to try out the available commands.",
+              color: EMBED_COLOR
+            }
+          });
+        } else {
+          command.handleMessage(msg);
+        }
       }
     });
   }
